@@ -1,0 +1,53 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+
+	
+		<!-- Pipe File process job -->
+	
+	<batch:job id="excelReportJob">
+		<batch:step id="excel">
+			<batch:tasklet>
+				<batch:chunk reader="excelFileItemReader" writer="mongodbItemWriter"
+					commit-interval="1">
+				</batch:chunk>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+	
+
+	<bean id="mongodbItemWriter" class="org.springframework.batch.item.data.MongoItemWriter">
+		<property name="template" ref="mongoTemplate" />
+		<property name="collection" value="empdeatail" />
+	</bean>
+	
+
+	
+	
+
+	
+	<bean id="excelFileItemReader" class="com.sg.socrates.service.item.excel.poi.PoiItemReader" scope="step">
+		
+		<property name="resource" value="#{jobParameters['key.file']}" />
+		<property name="rowMapper">
+            <bean class="com.sg.socrates.service.item.excel.mapping.PassThroughRowMapper" />
+       
+          
+        </property>
+
+
+
+	</bean>
+	
+	 
+		<bean id="empdeatail" class="com.sg.socrates.domain.empdeatil.EmployeeDetail"
+		scope="prototype" />
+
+</beans>
